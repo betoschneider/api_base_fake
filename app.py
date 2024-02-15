@@ -9,7 +9,7 @@ app = Flask(__name__)
 @app.route('/base', methods=['GET'])
 def get_padrao():
     try:
-        qtd_linhas = int(request.args.get('rows'))
+        qtd_linhas = min(int(request.args.get('rows')), 999)
     except:
         qtd_linhas = 50
 
