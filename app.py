@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from faker import Faker
 import pandas as pd
 
@@ -31,6 +31,15 @@ def get_padrao():
         
     return base.to_csv(index=False, sep=';', lineterminator='\n'), 200
 
+@app.route('/base/custom', methods=['GET'])
+def get_custom():
+    try:
+        colunas = request.args.get('colunas')
+        colunas = colunas.split('-')
+        return jsonify(colunas), 200
+    except:
+        return jsonify({"message": "Nenhum parametro enviado"}), 400
+
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
