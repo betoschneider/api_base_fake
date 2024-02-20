@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Metadados -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+</head>
+<body>
+    <!-- Campos para entrada de dados -->
+    <label for="opcao1">Nome da Coluna:</label>
+    <input type="text" id="opcao1" name="opcao1"><br><br>
+
+    <label for="opcao2">Tipo da Coluna::</label>
+    <select id="opcao2" name="opcao2" multiple>
+        <option value="DataNascimento">Data de Nascimento</option>
+        <option value="Idade">Idade</option>
+        <option value="Número">Número</option>
+        <option value="Cidade">Cidade</option>
+    </select><br><br>
+
+    <label for="quantidadeLinhas">Quantidade de Linhas:</label>
+    <input type="number" id="quantidadeLinhas" name="quantidadeLinhas" min="1" max="9999" value="1"><br>
+
+
+    <label for="limite_linhas">*Atenção: Limite Máximo de Linhas 9999.</label><br><br>
+
+    <!-- Botões para executar as ações -->
+    <button onclick="adicionarSelecionados()">Adicionar Selecionados</button>
+    <button onclick="removerSelecionados()">Remover Selecionados</button>
+    <button id="botaoSalvarCSV">Gerar Arquivo CSV</button>
+
+    <!-- Frame para exibir os dados selecionados -->
+    <iframe id="frame" name="frame" width="400" height="300"></iframe>
+
+    <!-- Script JavaScript -->
+    <script>
+        // Função para adicionar os dados selecionados ao frame
+        function adicionarSelecionados() {
+            var opcao1 = document.getElementById('opcao1').value;
+            var opcao2 = document.getElementById('opcao2').selectedOptions;
+
+            var frameContent = "<div class='conjunto'>";
+            frameContent += "<h3>Nome da Coluna:</h3><p><input type='checkbox' class='opcao1-checkbox'>" + opcao1 + "</p>";
+            frameContent += "<h3>Tipo da Coluna:</h3><ul>";
+            for (var i = 0; i < opcao2.length; i++) {
+                frameContent += "<li><input type='checkbox' class='opcao2-checkbox'>" + opcao2[i].value + "</li>";
+            }
+            frameContent += "</ul></div>";
+
+            var frame = document.getElementById('frame').contentWindow.document;
+            frame.body.innerHTML += frameContent;
+        }
+
+        // Função para remover os dados selecionados do frame
+        function removerSelecionados() {
+            var frame = document.getElementById('frame').contentWindow.document;
+            var conjuntos = frame.querySelectorAll('.conjunto');
+
+            for (var i = conjuntos.length - 1; i >= 0; i--) {
+                var opcao1Checkbox = conjuntos[i].querySelector('.opcao1-checkbox');
+                var opcao2Checkbox = conjuntos[i].querySelectorAll('.opcao2-checkbox');
+
+                if (opcao1Checkbox.checked) {
+                    conjuntos[i].remove();
+                } else {
+                    for (var j = opcao2Checkbox.length - 1; j >= 0; j--) {
+                        if (opcao2Checkbox[j].checked) {
+                            conjuntos[i].remove();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        async function salvarCSV(url) {
+            try {
+                // Busca o arquivo CSV da URL
+                const resposta = await fetch(url);
+                const textoCSV = await resposta.text();
+
+                // Cria um objeto Blob contendo os dados CSV
+                const blob = new Blob([textoCSV], { type: 'text/csv' });
+
+                // Cria um link temporário para download do arquivo
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                
+                // Define o nome do arquivo
+                link.download = 'dados.csv';
+
+                // Simula um clique no link para iniciar o download
+                link.click();
+
+                // Limpa o link
+                link.remove();
+            } catch (erro) {
+                console.error('Erro ao salvar o arquivo CSV:', erro);
+            }
+        }
+
+            // Adiciona um ouvinte de evento ao botão
+            document.getElementById('botaoSalvarCSV').addEventListener('click', function() {
+            const urlDoCSV = '../base'; // Substitua pela URL do seu arquivo CSV
+            salvarCSV(urlDoCSV);
+            });
+    </script>
+</body>
+</html>
