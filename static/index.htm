@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salvar CSV</title>
+</head>
+<body>
+  <button id="botaoSalvarCSV">Salvar CSV</button>
+
+  <script>
+    async function salvarCSV(url) {
+      try {
+        // Busca o arquivo CSV da URL
+        const resposta = await fetch(url);
+        const textoCSV = await resposta.text();
+
+        // Cria um objeto Blob contendo os dados CSV
+        const blob = new Blob([textoCSV], { type: 'text/csv' });
+
+        // Cria um link temporário para download do arquivo
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        
+        // Define o nome do arquivo
+        link.download = 'dados.csv';
+
+        // Simula um clique no link para iniciar o download
+        link.click();
+
+        // Limpa o link
+        link.remove();
+      } catch (erro) {
+        console.error('Erro ao salvar o arquivo CSV:', erro);
+      }
+    }
+
+    // Adiciona um ouvinte de evento ao botão
+    document.getElementById('botaoSalvarCSV').addEventListener('click', function() {
+      const urlDoCSV = '../base'; // Substitua pela URL do seu arquivo CSV
+      salvarCSV(urlDoCSV);
+    });
+  </script>
+</body>
+</html>
