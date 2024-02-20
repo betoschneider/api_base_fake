@@ -5,6 +5,12 @@ import pandas as pd
 app = Flask(__name__)
 
 #end points
+
+# Rota para servir arquivos estáticos
+@app.route('/static/<path:path>')
+def enviar_arquivos_estaticos(path):
+    return send_from_directory('static', path)
+
 #base padrao
 @app.route('/base', methods=['GET'])
 def get_padrao():
